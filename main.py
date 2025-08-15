@@ -11,7 +11,7 @@ def do_search(query):
         'quiet': False,  # ログ有効化でデバッグ
         'no_warnings': True,
         'cookiefile': 'cookies.txt',  # クッキー（フォーマット確認: LF/CRLF）
-        'user_agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+        'user_agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Mobile Safari/537.36',
         'socket_timeout': 60,  # 追加: ソケットタイムアウト60秒
         'extract_flat': True  # 追加: プレイリストを展開せず、検索結果のメタデータのみ取得（高速化）
     }
