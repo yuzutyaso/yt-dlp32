@@ -8,10 +8,7 @@ app = Flask(__name__)
 executor = ThreadPoolExecutor(max_workers=1)
 
 # YouTubeのクッキー情報
-YOUTUBE_COOKIES = """
-# Netscape HTTP Cookie File
-
-# Domain, Include Subdomains, Path, Secure, Expiry, Name, Value
+YOUTUBE_COOKIES = """# Netscape HTTP Cookie File
 
 .youtube.com\tTRUE\t/\tFALSE\t0\tPREF\ttz=UTC
 .youtube.com\tTRUE\t/\tTRUE\t0\tVISITOR_INFO1_LIVE\tXR0xd-RHxkM
@@ -21,22 +18,20 @@ YOUTUBE_COOKIES = """
 .youtube.com\tTRUE\t/\tTRUE\t0\tGPS\t1
 """
 
-# 検索・動画情報取得の共通オプション
 def get_ydl_opts(user_agent):
-    with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
-        temp_file.write(YOUTUBE_COOKIES)
-        temp_file_path = temp_file.name
-
+    temp_file = tempfile.NamedTemporaryFile(mode='w', delete=False, encoding='utf-8')
+    temp_file.write(YOUTUBE_COOKIES)
+    temp_file.close()
+    
     return {
-        'quiet': True,  # ログを非表示
+        'quiet': True,
         'no_warnings': True,
-        'cookiefile': temp_file_path,
+        'cookiefile': temp_file.name,
         'user_agent': user_agent,
         'socket_timeout': 60,
-        'temp_file_path': temp_file_path # 後で削除するためにパスを保持
+        'temp_file_path': temp_file.name
     }
 
-# 検索処理を関数化（非同期用）
 def do_search(query):
     opts = get_ydl_opts('Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Mobile Safari/537.36')
     try:
@@ -53,7 +48,6 @@ def do_search(query):
     finally:
         os.remove(opts['temp_file_path'])
 
-# ホーム画面
 @app.route('/')
 def home():
     return render_template_string('''
@@ -64,7 +58,6 @@ def home():
         </form>
     ''')
 
-# 検索結果画面（非同期化）
 @app.route('/search')
 def search():
     query = request.args.get('q')
@@ -79,7 +72,6 @@ def search():
     except Exception as e:
         return f"検索エラー: {str(e)}", 500
 
-# 動画詳細画面
 @app.route('/video/<video_id>')
 def video(video_id):
     opts = get_ydl_opts('Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36')
